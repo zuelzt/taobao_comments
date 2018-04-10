@@ -20,7 +20,7 @@ itemId_list = ['560597539512', '549049522944', '552919553653']
 sellerId_list = ['2616970884', '1714128138', '1114511827']
 name_list = ['iphone_X', 'xiaomi_6', 'huawei_rongyao_9']
 
-# comments_num 4.8w 12.6w 1.5w
+# comments_num 4.8w 12.6w 17.5w
 
 # begin
 for itemId, sellerId, name in zip(itemId_list, sellerId_list, name_list):
