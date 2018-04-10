@@ -13,41 +13,35 @@ import requests as rq
 import re
 import csv
 import codecs
+import time
 
-total_pages = 200
-comments = []
-for i in range(100):
-    page = str(i+1)
-    url = 'https://rate.tmall.com/list_detail_rate.htm?itemId=560597539512&sellerId=2616970884&currentPage=' + page
-    myweb = rq.get(url)
-    co = re.findall('\"rateContent\":(\".*?\")\,\"rateDate\"', myweb.text)
-    for num in range(len(co)):
-        comments.append(co[num][1:-1])
+# hyperparameter
+itemId_list = ['560597539512', '549049522944', '552919553653']
+sellerId_list = ['2616970884', '1714128138', '1114511827']
+name_list = ['iphone_X', 'xiaomi_6', 'huawei_rongyao_9']
 
-tb = codecs.open('tb_iphoneX_comments.csv', 'w', 'utf_8_sig')
-writer = csv.writer(tb)
-for i in range(len(comments)):
-    writer.writerow([comments[i]])
-tb.close()
-    
+# comments_num 4.8w 12.6w 1.5w
 
+# begin
+for itemId, sellerId, name in zip(itemId_list, sellerId_list, name_list):
+    total_pages = 500
+    count = 0
+    comments = []
+    begin = time.time()
+    for i in range(total_pages):
+        page = str(i+1)
+        url = 'https://rate.tmall.com/list_detail_rate.htm?itemId=' + itemId +'&sellerId=' + sellerId + '&currentPage=' + page
+        myweb = rq.get(url)
+        co = re.findall('\"rateContent\":(\".*?\")\,\"rateDate\"', myweb.text)
+        for num in range(len(co)):
+            comments.append(co[num][1:-1])
+            count += 1
+            print('get No. {}'.format(count))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    tb = codecs.open('tb_' + name + '_comments.csv', 'w', 'utf_8_sig')
+    writer = csv.writer(tb)
+    for i in range(len(comments)):
+        writer.writerow([comments[i]])
+    tb.close()
+    end = time.time()
+    print('{0} ---- Total {1:.3f} s !'.format(name, end-begin))
