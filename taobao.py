@@ -14,17 +14,21 @@ import re
 import csv
 import codecs
 import time
+import pymysql as sql
 
 # hyperparameter
-itemId_list = ['560597539512', '549049522944', '552919553653']
-sellerId_list = ['2616970884', '1714128138', '1114511827']
-name_list = ['iphone_X', 'xiaomi_6', 'huawei_rongyao_9']
+itemId_list = ['549049522944', '552919553653']  # '560597539512', 
+sellerId_list = ['1714128138', '1114511827']  #'2616970884',
+name_list = ['xiaomi_6', 'huawei_rongyao_9']  #'iphone_X', 
 
 # comments_num 4.8w 12.6w 17.5w
 
+# connect mysql
+con = sql.connect(host='localhost', user='root',passwd='',db='taobao',charset='utf8')
+
 # begin
 for itemId, sellerId, name in zip(itemId_list, sellerId_list, name_list):
-    total_pages = 500
+    total_pages = 6000
     count = 0
     comments = []
     begin = time.time()
@@ -37,7 +41,16 @@ for itemId, sellerId, name in zip(itemId_list, sellerId_list, name_list):
             comments.append(co[num][1:-1])
             count += 1
             print('get No. {}'.format(count))
-
+    # mysql
+    for i in range(len(comments)):
+        cursor = con.cursor()
+        query = ('insert into ' + name + '(comments) values (%s)')
+        cursor.execute(query, (comments[i]))
+        con.commit()
+        cursor.close()
+    con.close()
+     
+    # csv
     tb = codecs.open('tb_' + name + '_comments.csv', 'w', 'utf_8_sig')
     writer = csv.writer(tb)
     for i in range(len(comments)):
@@ -45,3 +58,24 @@ for itemId, sellerId, name in zip(itemId_list, sellerId_list, name_list):
     tb.close()
     end = time.time()
     print('{0} ---- Total {1:.3f} s !'.format(name, end-begin))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
